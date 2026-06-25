@@ -42,8 +42,16 @@ export function activate(context: vscode.ExtensionContext) {
 		const firstMessage = diagnostics[0].message;
 
 		vscode.window.showInformationMessage(
-			`少し詰まっているかもしれません。エラー: ${firstMessage}`
-		);
+			`少し詰まっているかもしれません。`,
+			'ヒントを見る',
+			'無視する'
+		).then(selection => {
+			if (selection === 'ヒントを見る') {
+				vscode.window.showInformationMessage(
+					`エラー内容: ${firstMessage}`
+				);
+			}
+		});
 
 		lastEditTime = Date.now();
 
