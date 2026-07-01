@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { showHintNotification } from './notification';
+import { getDiagnosticsForEditor, getFirstDiagnosticMessage } from './diagnostics';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -32,15 +33,17 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
-		const diagnostics = vscode.languages.getDiagnostics(
-			editor.document.uri
-		);
+		const diagnostics = getDiagnosticsForEditor(editor);
 
 		if (diagnostics.length === 0) {
 			return;
 		}
 
-		const firstMessage = diagnostics[0].message;
+		const firstMessage = getFirstDiagnosticMessage(editor);
+
+		if (!firstMessage) {
+			return;
+		}
 
 		showHintNotification(firstMessage);
 
