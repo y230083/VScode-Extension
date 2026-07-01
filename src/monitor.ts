@@ -5,6 +5,7 @@ import {
 	getFirstDiagnosticMessage
 } from './diagnostics';
 import { IdleDetector } from './idleDetector';
+import { Config } from './config';
 
 export function startMonitor(context: vscode.ExtensionContext) {
 	console.log("Monitor Started");
@@ -23,7 +24,7 @@ export function startMonitor(context: vscode.ExtensionContext) {
     
             const idleSeconds = idleDetector.getIdleSeconds();
     
-            if (idleSeconds < 10) {
+            if (idleSeconds < Config.IDLE_SECONDS) {
                 return;
             }
     
@@ -43,7 +44,7 @@ export function startMonitor(context: vscode.ExtensionContext) {
     
             idleDetector.reset();
     
-        }, 1000);
+        }, Config.CHECK_INTERVAL_MS);
 
         context.subscriptions.push({
             dispose: () => clearInterval(timer)
