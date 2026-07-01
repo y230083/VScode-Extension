@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { showHintNotification } from './notification';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -41,17 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const firstMessage = diagnostics[0].message;
 
-		vscode.window.showInformationMessage(
-			`少し詰まっているかもしれません。`,
-			'ヒントを見る',
-			'無視する'
-		).then(selection => {
-			if (selection === 'ヒントを見る') {
-				vscode.window.showInformationMessage(
-					`エラー内容: ${firstMessage}`
-				);
-			}
-		});
+		showHintNotification(firstMessage);
 
 		lastEditTime = Date.now();
 
