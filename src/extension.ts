@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import { showHintNotification } from './notification';
 import { getDiagnosticsForEditor, getFirstDiagnosticMessage } from './diagnostics';
+import { startMonitor } from './monitor';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -14,42 +15,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 
-	let lastEditTime = Date.now();
+	startMonitor(context);
 
-	vscode.workspace.onDidChangeTextDocument(() => {
-		lastEditTime = Date.now();
-	});
-
-	setInterval(() => {
-		const editor = vscode.window.activeTextEditor;
-
-		if (!editor) {
-			return;
-		}
-
-		const idleSeconds = (Date.now() - lastEditTime) / 1000;
-
-		if (idleSeconds < 10) {
-			return;
-		}
-
-		const diagnostics = getDiagnosticsForEditor(editor);
-
-		if (diagnostics.length === 0) {
-			return;
-		}
-
-		const firstMessage = getFirstDiagnosticMessage(editor);
-
-		if (!firstMessage) {
-			return;
-		}
-
-		showHintNotification(firstMessage);
-
-		lastEditTime = Date.now();
-
-	}, 1000);
 }
 
 // This method is called when your extension is deactivated
