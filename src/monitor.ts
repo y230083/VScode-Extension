@@ -4,14 +4,15 @@ import {
 	getDiagnosticsForEditor,
 	getFirstDiagnosticMessage
 } from './diagnostics';
+import { IdleDetector } from './idleDetector';
 
 export function startMonitor(context: vscode.ExtensionContext) {
 	console.log("Monitor Started");
-    let lastEditTime = Date.now();
-    
-        vscode.workspace.onDidChangeTextDocument(() => {
-            lastEditTime = Date.now();
-        });
+    const idleDetector = new IdleDetector();
+
+    vscode.workspace.onDidChangeTextDocument(() => {
+	    idleDetector.updateEditTime();
+    });
     
         const timer =setInterval(() => {
             const editor = vscode.window.activeTextEditor;
@@ -20,7 +21,7 @@ export function startMonitor(context: vscode.ExtensionContext) {
                 return;
             }
     
-            const idleSeconds = (Date.now() - lastEditTime) / 1000;
+            const idleSeconds = idleDetector.getIdleSeconds();
     
             if (idleSeconds < 10) {
                 return;
@@ -40,7 +41,7 @@ export function startMonitor(context: vscode.ExtensionContext) {
     
             showHintNotification(firstMessage);
     
-            lastEditTime = Date.now();
+            idleDetector.reset();
     
         }, 1000);
 
