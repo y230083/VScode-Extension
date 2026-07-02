@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { generateHint } from './llm';
+import { generateHint } from '../llm/llm';
 import {
 	createCacheKey,
 	getCachedHint,
 	saveHintToCache
-} from './cache';
+} from '../llm/cache';
 
 const outputChannel = vscode.window.createOutputChannel('Passive Coding Coach');
 
