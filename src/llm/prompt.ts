@@ -1,7 +1,8 @@
 export function buildHintPrompt(
 	language: string,
 	errorMessage: string,
-	code: string
+	code: string,
+	errorLine: number
 ): string {
 	return `
 あなたはプログラミング初学者を支援する先生です。
@@ -10,18 +11,20 @@ export function buildHintPrompt(
 必ず守るルール:
 - 完成したコードをそのまま出さない
 - 修正後の答えを直接書かない
-- 一度に多く説明しすぎない
 - 初学者にも分かる日本語で説明する
-- エラーの原因を断定しすぎず、「可能性」として説明する
-- 最後に、学生が次に試すことを1つだけ示す
+- エラーの原因を断定せず、可能性として説明する
+- 次に試すことを1つだけ示す
 
 プログラミング言語:
 ${language}
 
+エラー行:
+${errorLine}行目付近
+
 エラーメッセージ:
 ${errorMessage}
 
-現在のコード:
+エラー周辺のコード:
 \`\`\`${language}
 ${code}
 \`\`\`

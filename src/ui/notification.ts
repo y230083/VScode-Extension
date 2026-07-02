@@ -11,7 +11,8 @@ const outputChannel = vscode.window.createOutputChannel('Passive Coding Coach');
 export function showHintNotification(
 	language: string,
 	errorMessage: string,
-	code: string
+	code: string,
+	errorLine: number
 ) {
 	vscode.window.showInformationMessage(
 		'少し詰まっているかもしれません。',
@@ -24,7 +25,12 @@ export function showHintNotification(
 			let hint = getCachedHint(cacheKey);
 
 			if (!hint) {
-				hint = await generateHint(language, errorMessage, code);
+				hint = await generateHint(
+					language,
+					errorMessage,
+					code,
+					errorLine
+				);
 				saveHintToCache(cacheKey, hint);
 			} else {
 				hint = `【キャッシュから表示】\n\n${hint}`;

@@ -6,6 +6,7 @@ import {
 } from './diagnostics';
 import { IdleDetector } from './idleDetector';
 import { Config } from '../config/config';
+import { getCodeContext } from './codeContext';
 
 export function startMonitor(context: vscode.ExtensionContext) {
 	console.log("Monitor Started");
@@ -40,12 +41,18 @@ export function startMonitor(context: vscode.ExtensionContext) {
                 return;
             }
             
-            const code = editor.document.getText();
+            const code = getCodeContext(
+                editor,
+                diagnostics[0]
+            );
 
+            const errorLine = diagnostics[0].range.start.line + 1;
+            
             showHintNotification(
                 editor.document.languageId,
                 firstMessage,
-                code
+                code,
+                errorLine
             );
     
             idleDetector.reset();
