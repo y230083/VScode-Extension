@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { showHintNotification } from './notification';
+import { showHintNotification } from '../notification';
 import {
 	getDiagnosticsForEditor,
 	getFirstDiagnosticMessage
 } from './diagnostics';
 import { IdleDetector } from './idleDetector';
-import { Config } from './config';
+import { Config } from '../config';
 
 export function startMonitor(context: vscode.ExtensionContext) {
 	console.log("Monitor Started");
