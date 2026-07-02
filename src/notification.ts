@@ -1,15 +1,19 @@
 import * as vscode from 'vscode';
+import { generateHint } from './llm';
 
-export function showHintNotification(errorMessage: string) {
+export function showHintNotification(
+	language: string,
+	errorMessage: string
+) {
 	vscode.window.showInformationMessage(
 		'少し詰まっているかもしれません。',
 		'ヒントを見る',
 		'無視する'
-	).then(selection => {
+	).then(async selection => {
 		if (selection === 'ヒントを見る') {
-			vscode.window.showInformationMessage(
-				`エラー内容: ${errorMessage}`
-			);
+			const hint = await generateHint(language, errorMessage);
+
+			vscode.window.showInformationMessage(hint);
 		}
 	});
 }

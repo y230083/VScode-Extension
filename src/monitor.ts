@@ -40,7 +40,10 @@ export function startMonitor(context: vscode.ExtensionContext) {
                 return;
             }
     
-            showHintNotification(firstMessage);
+            showHintNotification(
+                editor.document.languageId,
+                firstMessage
+            );
     
             idleDetector.reset();
     
