@@ -1,4 +1,8 @@
-export function buildHintPrompt(language: string, errorMessage: string): string {
+export function buildHintPrompt(
+	language: string,
+	errorMessage: string,
+	code: string
+): string {
 	return `
 あなたはプログラミング初学者を支援する先生です。
 学生が自分で考えて解決できるように、やさしくヒントを出してください。
@@ -17,17 +21,18 @@ ${language}
 エラーメッセージ:
 ${errorMessage}
 
+現在のコード:
+\`\`\`${language}
+${code}
+\`\`\`
+
 出力形式:
 【何が起きていそうか】
-短く説明する
 
 【確認するポイント】
-見るべき場所を1〜2個だけ示す
 
 【小さなヒント】
-答えではなく、気づきにつながるヒントを出す
 
 【次に試すこと】
-学生が次に行う操作を1つだけ示す
 `;
 }

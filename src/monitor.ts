@@ -39,10 +39,13 @@ export function startMonitor(context: vscode.ExtensionContext) {
             if (!firstMessage) {
                 return;
             }
-    
+            
+            const code = editor.document.getText();
+
             showHintNotification(
                 editor.document.languageId,
-                firstMessage
+                firstMessage,
+                code
             );
     
             idleDetector.reset();

@@ -17,13 +17,14 @@ const client = new OpenAI({
 
 export async function generateHint(
 	language: string,
-	errorMessage: string
+	errorMessage: string,
+	code: string
 ): Promise<string> {
 	if (!apiKey) {
 		return 'OpenAI APIキーが設定されていません。.env を確認してください。';
 	}
 
-	const prompt = buildHintPrompt(language, errorMessage);
+	const prompt = buildHintPrompt(language, errorMessage, code);
 
 	try {
 		const response = await client.responses.create({
