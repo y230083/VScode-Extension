@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { generateHint } from './llm';
 
+const outputChannel = vscode.window.createOutputChannel('Passive Coding Coach');
+
 export function showHintNotification(
 	language: string,
 	errorMessage: string
@@ -13,7 +15,15 @@ export function showHintNotification(
 		if (selection === 'ヒントを見る') {
 			const hint = await generateHint(language, errorMessage);
 
-			vscode.window.showInformationMessage(hint);
+			outputChannel.clear();
+			outputChannel.appendLine('=== Passive Coding Coach ===');
+			outputChannel.appendLine('');
+			outputChannel.appendLine(hint);
+			outputChannel.show();
+
+			vscode.window.showInformationMessage(
+				'ヒントを出力チャンネルに表示しました。'
+			);
 		}
 	});
 }
