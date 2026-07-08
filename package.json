@@ -2,6 +2,7 @@
   "name": "passive-coding-coach",
   "displayName": "passive-coding-coach",
   "description": "LLM-powered coding mentor",
+  "publisher": "ABCDEFG",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.120.0"
