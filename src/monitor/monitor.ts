@@ -7,6 +7,7 @@ import {
 import { IdleDetector } from './idleDetector';
 import { Config } from '../config/config';
 import { getCodeContext } from './codeContext';
+import { isStuck } from './stuckDetector';
 
 export function startMonitor(context: vscode.ExtensionContext) {
 	console.log("Monitor Started");
@@ -22,19 +23,17 @@ export function startMonitor(context: vscode.ExtensionContext) {
             if (!editor) {
                 return;
             }
-    
-            const idleSeconds = idleDetector.getIdleSeconds();
-    
-            if (idleSeconds < Config.IDLE_SECONDS) {
-                return;
-            }
-    
+
             const diagnostics = getDiagnosticsForEditor(editor);
-    
-            if (diagnostics.length === 0) {
+            
+            const idleSeconds = idleDetector.getIdleSeconds();
+            if (!isStuck({
+                idleSeconds,
+                diagnostics
+            })) {
                 return;
             }
-    
+
             const firstMessage = getFirstDiagnosticMessage(editor);
     
             if (!firstMessage) {
