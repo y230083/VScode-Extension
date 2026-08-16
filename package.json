@@ -17,8 +17,16 @@
   "contributes": {
     "commands": [
       {
-        "command": "passive-coding-coach.helloWorld",
-        "title": "Hello World"
+        "command": "passive-coding-coach.showStatus",
+        "title": "Passive Coding Coach: 状態確認"
+      },
+      {
+        "command": "passive-coding-coach.setAssignment",
+        "title": "Passive Coding Coach: 課題を設定"
+      },
+      {
+        "command": "passive-coding-coach.clearAssignment",
+        "title": "Passive Coding Coach: 課題設定を解除"
       }
     ]
   },

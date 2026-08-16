@@ -1,26 +1,55 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { showHintNotification } from './ui/notification';
-import { getDiagnosticsForEditor, getFirstDiagnosticMessage } from './monitor/diagnostics';
 import { startMonitor } from './monitor/monitor';
-import { askAssignment } from './assignment/assignment';
+import { askAssignment,clearAssignment } from './assignment/assignment';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-
-	const disposable = vscode.commands.registerCommand('passive-coding-coach.helloWorld', () => {
-		vscode.window.showInformationMessage('Passive Coding Coach は動作中です');
-	});
+export function activate(
+	context: vscode.ExtensionContext
+) {
+	const disposable = vscode.commands.registerCommand(
+		'passive-coding-coach.showStatus',
+		() => {
+			vscode.window.showInformationMessage(
+				'Passive Coding Coach は正常に動作しています。'
+			);
+		}
+	);
 
 	context.subscriptions.push(disposable);
 
-	askAssignment();
+	const editor = vscode.window.activeTextEditor;
+
+	if (editor) {
+		askAssignment(
+			context,
+			editor.document
+		);
+	}
+
+	const assignmentCommand =
+		vscode.commands.registerCommand(
+			'passive-coding-coach.setAssignment',
+			async () => {
+				const editor =
+					vscode.window.activeTextEditor;
+
+				if (!editor) {
+					vscode.window.showWarningMessage(
+						'課題を設定するファイルを開いてください。'
+					);
+
+					return;
+				}
+
+				await askAssignment(
+					context,
+					editor.document
+				);
+			}
+		);
+
+	context.subscriptions.push(assignmentCommand);
 
 	startMonitor(context);
-
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}

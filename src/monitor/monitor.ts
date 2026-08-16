@@ -134,7 +134,14 @@ export function startMonitor(
 		console.log('編集統計:', editStatistics);
 		console.log('対象行:', targetLine);
 		
-		const assignment = getAssignment();
+		const assignment = getAssignment(
+			context,
+			editor.document
+		);
+
+		if (!assignment) {
+			return;
+		}
 
 		showHintNotification(
 			editor.document.languageId,

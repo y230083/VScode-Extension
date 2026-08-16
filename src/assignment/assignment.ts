@@ -1,30 +1,59 @@
 import * as vscode from 'vscode';
 
-let assignmentText: string | undefined;
+function getAssignmentKey(
+	document: vscode.TextDocument
+): string {
+	return `assignment:${document.uri.toString()}`;
+}
 
-export async function askAssignment(): Promise<void> {
+export async function askAssignment(
+	context: vscode.ExtensionContext,
+	document: vscode.TextDocument
+): Promise<void> {
+	const currentAssignment =
+		getAssignment(context, document);
+
 	const input = await vscode.window.showInputBox({
 		title: 'Passive Coding Coach',
-		prompt: '取り組む課題の内容を入力してください',
+		prompt: 'このファイルの課題内容を入力してください',
 		placeHolder:
-			'例：再帰を用いて、フィボナッチ数列を計算するプログラムを作成する'
+			'例：再帰を用いて、フィボナッチ数列を計算するプログラムを作成する',
+		value: currentAssignment ?? ''
 	});
 
 	if (!input) {
-		vscode.window.showWarningMessage(
-			'課題内容が入力されませんでした。'
-		);
-
 		return;
 	}
 
-	assignmentText = input;
+	await context.workspaceState.update(
+		getAssignmentKey(document),
+		input
+	);
 
 	vscode.window.showInformationMessage(
-		`課題を設定しました: ${assignmentText}`
+		'このファイルの課題を保存しました。'
 	);
 }
 
-export function getAssignment(): string | undefined {
-	return assignmentText;
+export async function clearAssignment(
+	context: vscode.ExtensionContext,
+	document: vscode.TextDocument
+): Promise<void> {
+	await context.workspaceState.update(
+		getAssignmentKey(document),
+		undefined
+	);
+
+	vscode.window.showInformationMessage(
+		'このファイルの課題設定を解除しました。'
+	);
+}
+
+export function getAssignment(
+	context: vscode.ExtensionContext,
+	document: vscode.TextDocument
+): string | undefined {
+	return context.workspaceState.get<string>(
+		getAssignmentKey(document)
+	);
 }
