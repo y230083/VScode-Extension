@@ -12,7 +12,8 @@ export function showHintNotification(
 	language: string,
 	errorMessage: string,
 	code: string,
-	errorLine: number
+	errorLine: number,
+	assignment?: string
 ) {
 	vscode.window.showInformationMessage(
 		'少し詰まっているかもしれません。',
@@ -29,7 +30,8 @@ export function showHintNotification(
 					language,
 					errorMessage,
 					code,
-					errorLine
+					errorLine,
+					assignment
 				);
 				saveHintToCache(cacheKey, hint);
 			} else {

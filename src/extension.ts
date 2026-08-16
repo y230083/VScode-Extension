@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import { showHintNotification } from './ui/notification';
 import { getDiagnosticsForEditor, getFirstDiagnosticMessage } from './monitor/diagnostics';
 import { startMonitor } from './monitor/monitor';
+import { askAssignment } from './assignment/assignment';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -14,6 +15,8 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(disposable);
+
+	askAssignment();
 
 	startMonitor(context);
 

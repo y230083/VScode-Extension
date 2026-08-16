@@ -13,6 +13,7 @@ import { getCodeContext } from './codeContext';
 import { isStuck } from './stuckDetector';
 import { NotificationCooldown } from './notificationCooldown';
 import { EditTracker } from './editTracker';
+import { getAssignment } from '../assignment/assignment';
 
 export function startMonitor(
 	context: vscode.ExtensionContext
@@ -126,12 +127,15 @@ export function startMonitor(
 		console.log('停止時間:', idleSeconds);
 		console.log('編集統計:', editStatistics);
 		console.log('対象行:', targetLine);
+		
+		const assignment = getAssignment();
 
 		showHintNotification(
 			editor.document.languageId,
 			message,
 			code,
-			targetLine
+			targetLine,
+			assignment
 		);
 
 		cooldown.update(notificationKey);

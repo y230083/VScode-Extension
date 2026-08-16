@@ -19,7 +19,8 @@ export async function generateHint(
 	language: string,
 	errorMessage: string,
 	code: string,
-	errorLine: number
+	errorLine: number,
+	assignment?: string
 ): Promise<string> {
 	if (!apiKey) {
 		return 'OpenAI APIキーが設定されていません。.env を確認してください。';
@@ -29,7 +30,8 @@ export async function generateHint(
 		language,
 		errorMessage,
 		code,
-		errorLine
+		errorLine,
+		assignment
 	);
 
 	try {
