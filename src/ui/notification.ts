@@ -5,14 +5,16 @@ import {
 	getCachedHint,
 	saveHintToCache
 } from '../llm/cache';
+import { StuckReason } from '../llm/types';
 
 const outputChannel = vscode.window.createOutputChannel('Passive Coding Coach');
 
 export function showHintNotification(
 	language: string,
-	errorMessage: string,
+	reason: StuckReason,
+	message: string,
 	code: string,
-	errorLine: number,
+	targetLine: number,
 	assignment?: string
 ) {
 	vscode.window.showInformationMessage(
@@ -21,16 +23,17 @@ export function showHintNotification(
 		'無視する'
 	).then(async selection => {
 		if (selection === 'ヒントを見る') {
-			const cacheKey = createCacheKey(language, errorMessage, code);
+			const cacheKey = createCacheKey(language, reason, message, code);
 
 			let hint = getCachedHint(cacheKey);
 
 			if (!hint) {
 				hint = await generateHint(
 					language,
-					errorMessage,
+					reason,
+					message,
 					code,
-					errorLine,
+					targetLine,
 					assignment
 				);
 				saveHintToCache(cacheKey, hint);

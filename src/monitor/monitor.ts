@@ -14,6 +14,8 @@ import { isStuck } from './stuckDetector';
 import { NotificationCooldown } from './notificationCooldown';
 import { EditTracker } from './editTracker';
 import { getAssignment } from '../assignment/assignment';
+import { StuckReason } from '../llm/types';
+
 
 export function startMonitor(
 	context: vscode.ExtensionContext
@@ -78,6 +80,10 @@ export function startMonitor(
 		let code: string;
 		let notificationType: string;
 
+		const reason: StuckReason = hasError
+		? 'error'
+		: 'repeated-edit';
+
 		if (hasError) {
 			message =
 				getFirstDiagnosticMessage(editor)
@@ -132,6 +138,7 @@ export function startMonitor(
 
 		showHintNotification(
 			editor.document.languageId,
+			reason,
 			message,
 			code,
 			targetLine,

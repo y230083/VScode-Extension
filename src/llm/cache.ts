@@ -1,11 +1,14 @@
+import { StuckReason } from './types';
+
 const hintCache = new Map<string, string>();
 
 export function createCacheKey(
 	language: string,
-	errorMessage: string,
+	reason: StuckReason,
+	message: string,
 	code: string
 ): string {
-	return `${language}::${errorMessage}::${code}`;
+	return `${language}::${reason}::${message}::${code}`;
 }
 
 export function getCachedHint(key: string): string | undefined {

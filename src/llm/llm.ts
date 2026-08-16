@@ -2,6 +2,7 @@ import * as path from 'path';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
 import { buildHintPrompt } from './prompt';
+import { StuckReason } from './types';
 
 const envPath = path.join(__dirname, '..', '.env');
 
@@ -17,7 +18,8 @@ const client = new OpenAI({
 
 export async function generateHint(
 	language: string,
-	errorMessage: string,
+	reason: StuckReason,
+	message: string,
 	code: string,
 	errorLine: number,
 	assignment?: string
@@ -28,7 +30,8 @@ export async function generateHint(
 
 	const prompt = buildHintPrompt(
 		language,
-		errorMessage,
+		reason,
+		message,
 		code,
 		errorLine,
 		assignment
