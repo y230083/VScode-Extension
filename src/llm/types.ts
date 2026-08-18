@@ -1,3 +1,8 @@
 export type StuckReason =
 	| 'error'
-	| 'repeated-edit';
+	| 'repeated-edit'
+	| 'long-idle';
+export type HintLevel =
+	| 'light'
+	| 'medium'
+	| 'strong';

@@ -47,6 +47,29 @@ export function activate(
 			}
 		);
 
+	const clearAssignmentCommand =
+		vscode.commands.registerCommand(
+			'passive-coding-coach.clearAssignment',
+			async () => {
+				const editor =
+					vscode.window.activeTextEditor;
+
+				if (!editor) {
+					vscode.window.showWarningMessage(
+						'課題設定を解除するファイルを開いてください。'
+					);
+					return;
+				}
+
+				await clearAssignment(
+					context,
+					editor.document
+				);
+			}
+		);
+
+	context.subscriptions.push(clearAssignmentCommand);
+
 	context.subscriptions.push(assignmentCommand);
 
 	startMonitor(context);

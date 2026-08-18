@@ -25,7 +25,9 @@ export class EditTracker {
 
 	private readonly trackingWindowMs = 30_000;
 
-	recordEdit(event: vscode.TextDocumentChangeEvent): void {
+	recordEdit(
+		event: vscode.TextDocumentChangeEvent
+	): void {
 		const now = Date.now();
 
 		for (const change of event.contentChanges) {
@@ -39,7 +41,8 @@ export class EditTracker {
 				this.deleteCount++;
 			}
 
-			const line = change.range.start.line + 1;
+			const line =
+				change.range.start.line + 1;
 
 			this.editRecords.push({
 				line,
@@ -55,25 +58,45 @@ export class EditTracker {
 
 		this.removeOldRecords(now);
 
-		const nearbyResult = this.calculateMostEditedArea();
+		const nearbyResult =
+			this.calculateMostEditedArea();
 
 		return {
-			totalEditCount: this.totalEditCount,
-			insertCount: this.insertCount,
-			deleteCount: this.deleteCount,
-			editedLines: Array.from(
-				new Set(this.editRecords.map(record => record.line))
-			),
-			maxNearbyEditCount: nearbyResult.editCount,
-			mostEditedLine: nearbyResult.centerLine
+			totalEditCount:
+				this.totalEditCount,
+
+			insertCount:
+				this.insertCount,
+
+			deleteCount:
+				this.deleteCount,
+
+			editedLines:
+				Array.from(
+					new Set(
+						this.editRecords.map(
+							record => record.line
+						)
+					)
+				),
+
+			maxNearbyEditCount:
+				nearbyResult.editCount,
+
+			mostEditedLine:
+				nearbyResult.centerLine
 		};
 	}
 
-	private removeOldRecords(now: number): void {
-		this.editRecords = this.editRecords.filter(
-			record =>
-				now - record.timestamp <= this.trackingWindowMs
-		);
+	private removeOldRecords(
+		now: number
+	): void {
+		this.editRecords =
+			this.editRecords.filter(
+				record =>
+					now - record.timestamp
+					<= this.trackingWindowMs
+			);
 	}
 
 	private calculateMostEditedArea(): {
@@ -88,21 +111,35 @@ export class EditTracker {
 		}
 
 		const candidateLines =
-			new Set(this.editRecords.map(record => record.line));
+			new Set(
+				this.editRecords.map(
+					record => record.line
+				)
+			);
 
 		let maxEditCount = 0;
-		let mostEditedLine: number | null = null;
+		let mostEditedLine: number | null =
+			null;
 
 		for (const centerLine of candidateLines) {
 			const nearbyEditCount =
-				this.editRecords.filter(record =>
-					Math.abs(record.line - centerLine)
-					<= this.nearbyRange
+				this.editRecords.filter(
+					record =>
+						Math.abs(
+							record.line
+							- centerLine
+						) <= this.nearbyRange
 				).length;
 
-			if (nearbyEditCount > maxEditCount) {
-				maxEditCount = nearbyEditCount;
-				mostEditedLine = centerLine;
+			if (
+				nearbyEditCount
+				> maxEditCount
+			) {
+				maxEditCount =
+					nearbyEditCount;
+
+				mostEditedLine =
+					centerLine;
 			}
 		}
 
