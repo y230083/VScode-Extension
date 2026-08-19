@@ -21,6 +21,7 @@ const outputChannel =
 	);
 
 export function showHintNotification(
+	context: vscode.ExtensionContext,
 	language: string,
 	reason: StuckReason,
 	message: string,
@@ -56,6 +57,7 @@ export function showHintNotification(
 		if (!hint) {
 			hint =
 				await generateHint(
+					context,
 					language,
 					reason,
 					message,

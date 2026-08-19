@@ -25,6 +25,78 @@ export function activate(
 		);
 	}
 
+	const setApiKeyCommand =
+		vscode.commands.registerCommand(
+			'passive-coding-coach.setApiKey',
+			async () => {
+				const apiKey =
+					await vscode.window.showInputBox({
+						title: 'Passive Coding Coach',
+						prompt: 'OpenAI APIキーを入力してください',
+						password: true,
+						ignoreFocusOut: true
+					});
+
+				if (!apiKey) {
+					return;
+				}
+
+				await context.secrets.store(
+					'OPENAI_API_KEY',
+					apiKey
+				);
+
+				vscode.window.showInformationMessage(
+					'OpenAI APIキーを保存しました。'
+				);
+			}
+		);
+
+	context.subscriptions.push(
+		setApiKeyCommand
+	);
+
+	const deleteApiKeyCommand =
+		vscode.commands.registerCommand(
+			'passive-coding-coach.deleteApiKey',
+			async () => {
+				const apiKey =
+					await context.secrets.get(
+						'OPENAI_API_KEY'
+					);
+
+				if (!apiKey) {
+					vscode.window.showInformationMessage(
+						'保存されているAPIキーはありません。'
+					);
+					return;
+				}
+
+				const selection =
+					await vscode.window.showWarningMessage(
+						'保存されているOpenAI APIキーを削除しますか？',
+						{ modal: true },
+						'削除する'
+					);
+
+				if (selection !== '削除する') {
+					return;
+				}
+
+				await context.secrets.delete(
+					'OPENAI_API_KEY'
+				);
+
+				vscode.window.showInformationMessage(
+					'OpenAI APIキーを削除しました。'
+				);
+			}
+		);
+
+	context.subscriptions.push(
+		deleteApiKeyCommand
+	);
+
 	const assignmentCommand =
 		vscode.commands.registerCommand(
 			'passive-coding-coach.setAssignment',

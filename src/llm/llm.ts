@@ -1,5 +1,4 @@
-import * as path from 'path';
-import dotenv from 'dotenv';
+import * as vscode from 'vscode';
 import OpenAI from 'openai';
 
 import {
@@ -11,22 +10,8 @@ import {
 	HintLevel
 } from './types';
 
-
-const envPath = path.join(
-	__dirname,
-	'..',
-	'.env'
-);
-
-dotenv.config({
-	path: envPath
-});
-
-const apiKey =
-	process.env.OPENAI_API_KEY;
-
-
 export async function generateHint(
+	context: vscode.ExtensionContext,
 	language: string,
 	reason: StuckReason,
 	message: string,
@@ -36,16 +21,24 @@ export async function generateHint(
 	hintLevel?: HintLevel
 ): Promise<string> {
 
+	const apiKey =
+		await context.secrets.get(
+			'OPENAI_API_KEY'
+		);
+
 	if (!apiKey) {
 		return (
 			'OpenAI APIキーが設定されていません。'
-			+ '.env を確認してください。'
+			+ 'コマンドパレットから '
+			+ '「Passive Coding Coach: APIキーを設定」'
+			+ 'を実行してください。'
 		);
 	}
 
-	const client = new OpenAI({
-		apiKey
-	});
+	const client =
+		new OpenAI({
+			apiKey
+		});
 
 	const prompt =
 		buildHintPrompt(

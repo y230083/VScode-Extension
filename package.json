@@ -27,6 +27,14 @@
       {
         "command": "passive-coding-coach.clearAssignment",
         "title": "Passive Coding Coach: 課題設定を解除"
+      },
+      {
+        "command": "passive-coding-coach.setApiKey",
+        "title": "Passive Coding Coach: APIキーを設定"
+      },
+      {
+        "command": "passive-coding-coach.deleteApiKey",
+        "title": "Passive Coding Coach: APIキーを削除"
       }
     ]
   },

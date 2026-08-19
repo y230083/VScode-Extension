@@ -302,6 +302,7 @@ export function startMonitor(
 		);
 
 		showHintNotification(
+			context,
 			editor.document.languageId,
 			reason,
 			message,
