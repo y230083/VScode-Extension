@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
-import { startMonitor } from './monitor/monitor';
+import {
+	startMonitor,
+	clearFileMonitorState
+} from './monitor/monitor';
 import { askAssignment,clearAssignment } from './assignment/assignment';
 
 export function activate(
@@ -16,14 +19,6 @@ export function activate(
 
 	context.subscriptions.push(disposable);
 
-	const editor = vscode.window.activeTextEditor;
-
-	if (editor) {
-		askAssignment(
-			context,
-			editor.document
-		);
-	}
 
 	const setApiKeyCommand =
 		vscode.commands.registerCommand(
@@ -135,6 +130,10 @@ export function activate(
 
 				await clearAssignment(
 					context,
+					editor.document
+				);
+
+				clearFileMonitorState(
 					editor.document
 				);
 			}

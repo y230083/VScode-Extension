@@ -15,6 +15,10 @@ import {
 	saveHintToCache
 } from '../llm/cache';
 
+import {
+	getAssignment
+} from '../assignment/assignment';
+
 const outputChannel =
 	vscode.window.createOutputChannel(
 		'Passive Coding Coach'
@@ -22,6 +26,7 @@ const outputChannel =
 
 export function showHintNotification(
 	context: vscode.ExtensionContext,
+	document: vscode.TextDocument,
 	language: string,
 	reason: StuckReason,
 	message: string,
@@ -36,12 +41,21 @@ export function showHintNotification(
 		'無視する'
 	).then(async selection => {
 
-		if (
-			selection !== 'ヒントを見る'
-		) {
+		if ( selection !== 'ヒントを見る' ) {
 			return;
 		}
+		const currentAssignment =
+				getAssignment(
+					context,
+					document
+				);
 
+			if (!currentAssignment) {
+				vscode.window.showInformationMessage(
+					'このファイルの課題設定は解除されています。'
+				);
+				return;
+			}
 		const cacheKey =
 			createCacheKey(
 				language,
@@ -63,7 +77,7 @@ export function showHintNotification(
 					message,
 					code,
 					targetLine,
-					assignment,
+					currentAssignment,
 					hintLevel
 				);
 

@@ -41,6 +41,38 @@ import {
 	HintProgress
 } from './hintProgress';
 
+interface FileMonitorState {
+	idleDetector: IdleDetector;
+	editTracker: EditTracker;
+	hintProgress: HintProgress;
+	assignmentStartTime: number;
+}
+
+function createFileMonitorState(): FileMonitorState {
+	return {
+		idleDetector: new IdleDetector(),
+		editTracker: new EditTracker(),
+		hintProgress: new HintProgress(),
+		assignmentStartTime: Date.now()
+	};
+}
+
+const fileStates =
+	new Map<string, FileMonitorState>();
+
+export function clearFileMonitorState(
+	document: vscode.TextDocument
+): void {
+	const fileKey =
+		document.uri.toString();
+
+	fileStates.delete(fileKey);
+
+	console.log(
+		'監視状態を削除しました:',
+		fileKey
+	);
+}
 
 export function startMonitor(
 	context: vscode.ExtensionContext
@@ -48,27 +80,33 @@ export function startMonitor(
 
 	console.log('Monitor Started');
 
-	const idleDetector =
-		new IdleDetector();
+	function getFileState(
+		fileKey: string
+	): FileMonitorState {
+		let state =
+			fileStates.get(fileKey);
 
-	const editTracker =
-		new EditTracker();
+		if (!state) {
+			state =
+				createFileMonitorState();
+
+			fileStates.set(
+				fileKey,
+				state
+			);
+		}
+
+		return state;
+	}
 
 	const cooldown =
 		new NotificationCooldown(
 			Config.NOTIFICATION_COOLDOWN_MS
 		);
 
-	const hintProgressMap =
-		new Map<string, HintProgress>();
-
-	const assignmentStartTimeMap =
-		new Map<string, number>();
-
 	const editSubscription =
 		vscode.workspace.onDidChangeTextDocument(
 			event => {
-
 				if (
 					event.document.uri.scheme
 					!== 'file'
@@ -76,11 +114,23 @@ export function startMonitor(
 					return;
 				}
 
-				idleDetector.updateEditTime();
+				const fileKey =
+					event.document.uri.toString();
 
-				editTracker.recordEdit(event);
+				const state =
+					getFileState(fileKey);
+
+				state.idleDetector.updateEditTime();
+
+				state.editTracker.recordEdit(
+					event
+				);
 			}
 		);
+
+	context.subscriptions.push(
+		editSubscription
+	);
 
 	context.subscriptions.push(
 		editSubscription
@@ -115,52 +165,28 @@ export function startMonitor(
 		const fileKey =
 			editor.document.uri.toString();
 
-		if (
-			!assignmentStartTimeMap.has(
-				fileKey
-			)
-		) {
-			assignmentStartTimeMap.set(
-				fileKey,
-				Date.now()
-			);
-		}
-
-		let hintProgress =
-			hintProgressMap.get(fileKey);
-
-		if (!hintProgress) {
-
-			hintProgress =
-				new HintProgress();
-
-			hintProgressMap.set(
-				fileKey,
-				hintProgress
-			);
-		}
+		const state =
+			getFileState(fileKey);
 
 		const hintLevel =
-			hintProgress.getLevel();
+			state.hintProgress.getLevel();
 
 		const requiredIdleSeconds =
-			hintProgress
+			state.hintProgress
 				.getRequiredIdleSeconds();
 
 		const editStatistics =
-			editTracker.getStatistics();
+			state.editTracker.getStatistics();
 
 		const assignmentStartTime =
-			assignmentStartTimeMap.get(
-				fileKey
-			)!;
+			state.assignmentStartTime;
 
 		const idleSeconds =
 			editStatistics.totalEditCount > 0
-				? idleDetector.getIdleSeconds()
+				? state.idleDetector.getIdleSeconds()
 				: (
 					Date.now()
-					- assignmentStartTime
+					- state.assignmentStartTime
 				) / 1000;
 
 		const diagnostics =
@@ -300,41 +326,47 @@ export function startMonitor(
 			'編集統計:',
 			editStatistics
 		);
+const latestAssignment = getAssignment(
+		context,
+		editor.document
+	);
 
-		showHintNotification(
-			context,
-			editor.document.languageId,
-			reason,
-			message,
-			code,
-			targetLine,
-			assignment,
-			reason === 'long-idle'
-				? hintLevel
-				: undefined
-		);
+	if (!latestAssignment) {
+		return;
+	}
+
+	showHintNotification(
+		context,
+		editor.document,
+		editor.document.languageId,
+		reason,
+		message,
+		code,
+		targetLine,
+		latestAssignment,
+		reason === 'long-idle'
+			? hintLevel
+			: undefined
+	);
 
 		if (
 			reason === 'long-idle'
 		) {
-			hintProgress.advance();
+			state.hintProgress.advance();
 		}
 
 		cooldown.update(
 			notificationKey
 		);
 
-		idleDetector.reset();
+		state.idleDetector.reset();
 
-		editTracker.reset();
+		state.editTracker.reset();
 
 		if (
 			reason === 'long-idle'
 		) {
-			assignmentStartTimeMap.set(
-				fileKey,
-				Date.now()
-			);
+			state.assignmentStartTime = Date.now();
 		}
 
 	},
