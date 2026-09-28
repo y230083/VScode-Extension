@@ -12,13 +12,14 @@ export interface EditStatistics {
 	editedLines: number[];
 	maxNearbyEditCount: number;
 	mostEditedLine: number | null;
+	changedCharacterCount: number;
 }
 
 export class EditTracker {
 	private totalEditCount = 0;
 	private insertCount = 0;
 	private deleteCount = 0;
-
+	private changedCharacterCount = 0;
 	private editRecords: EditRecord[] = [];
 
 	private readonly nearbyRange = 2;
@@ -32,7 +33,7 @@ export class EditTracker {
 
 		for (const change of event.contentChanges) {
 			this.totalEditCount++;
-
+			this.changedCharacterCount += change.text.length + change.rangeLength;
 			if (change.text.length > 0) {
 				this.insertCount++;
 			}
@@ -84,7 +85,10 @@ export class EditTracker {
 				nearbyResult.editCount,
 
 			mostEditedLine:
-				nearbyResult.centerLine
+				nearbyResult.centerLine,
+
+            changedCharacterCount:
+				this.changedCharacterCount
 		};
 	}
 
@@ -154,5 +158,6 @@ export class EditTracker {
 		this.insertCount = 0;
 		this.deleteCount = 0;
 		this.editRecords = [];
+		this.changedCharacterCount = 0;
 	}
 }

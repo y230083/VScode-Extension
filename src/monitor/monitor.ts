@@ -132,10 +132,6 @@ export function startMonitor(
 		editSubscription
 	);
 
-	context.subscriptions.push(
-		editSubscription
-	);
-
 	const timer = setInterval(() => {
 
 		const editor =
@@ -177,6 +173,28 @@ export function startMonitor(
 
 		const editStatistics =
 			state.editTracker.getStatistics();
+
+		const hasMajorChange =
+			editStatistics.changedCharacterCount >= 30
+			||
+			editStatistics.editedLines.length >= 4;
+
+		if (
+			hasMajorChange
+			&& hintLevel !== 'light'
+		) {
+			console.log(
+				'コードが大きく変更されたため、'
+				+ 'ヒントレベルをLightに戻します。'
+			);
+
+			state.hintProgress.reset();
+			state.editTracker.reset();
+			state.idleDetector.reset();
+			state.assignmentStartTime = Date.now();
+
+			return;
+		}
 
 		const assignmentStartTime =
 			state.assignmentStartTime;
