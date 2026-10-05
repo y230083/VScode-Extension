@@ -41,6 +41,10 @@ import {
 	HintProgress
 } from './hintProgress';
 
+import {
+	StudyLogger
+} from '../logger/studyLogger';
+
 interface FileMonitorState {
 	idleDetector: IdleDetector;
 	editTracker: EditTracker;
@@ -77,6 +81,11 @@ export function clearFileMonitorState(
 export function startMonitor(
 	context: vscode.ExtensionContext
 ): void {
+
+	const studyLogger =
+		new StudyLogger(
+			context.extensionPath
+		);
 
 	console.log('Monitor Started');
 
@@ -353,6 +362,22 @@ const latestAssignment = getAssignment(
 		return;
 	}
 
+	studyLogger.log({
+		timestamp: new Date().toISOString(),
+		fileName: editor.document.fileName,
+		reason,
+		hintLevel:
+			reason === 'long-idle'
+				? hintLevel
+				: undefined,
+		idleSeconds,
+		editCount:
+			editStatistics.totalEditCount,
+		changedCharacterCount:
+			editStatistics.changedCharacterCount,
+		action: 'detected'
+	});
+
 	showHintNotification(
 		context,
 		editor.document,
@@ -364,7 +389,8 @@ const latestAssignment = getAssignment(
 		latestAssignment,
 		reason === 'long-idle'
 			? hintLevel
-			: undefined
+			: undefined,
+		studyLogger
 	);
 
 		if (

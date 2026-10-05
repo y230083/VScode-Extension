@@ -8,6 +8,7 @@ import { askAssignment,clearAssignment } from './assignment/assignment';
 export function activate(
 	context: vscode.ExtensionContext
 ) {
+	console.log('=== activate START ===');
 	const disposable = vscode.commands.registerCommand(
 		'passive-coding-coach.showStatus',
 		() => {
@@ -143,7 +144,12 @@ export function activate(
 
 	context.subscriptions.push(assignmentCommand);
 
+	console.log('=== before startMonitor ===');
+
 	startMonitor(context);
+
+	console.log('=== after startMonitor ===');
+	console.log('=== activate END ===');
 }
 
 export function deactivate() {}

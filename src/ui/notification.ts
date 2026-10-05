@@ -19,6 +19,10 @@ import {
 	getAssignment
 } from '../assignment/assignment';
 
+import {
+	StudyLogger
+} from '../logger/studyLogger';
+
 const outputChannel =
 	vscode.window.createOutputChannel(
 		'Passive Coding Coach'
@@ -33,13 +37,27 @@ export function showHintNotification(
 	code: string,
 	targetLine: number,
 	assignment?: string,
-	hintLevel?: HintLevel
+	hintLevel?: HintLevel,
+	studyLogger?: StudyLogger
 ) {
 	vscode.window.showInformationMessage(
 		'少し詰まっているかもしれません。',
 		'ヒントを見る',
 		'無視する'
 	).then(async selection => {
+
+		if (selection === '無視する') {
+
+			studyLogger?.log({
+				timestamp: new Date().toISOString(),
+				fileName: document.fileName,
+				reason,
+				hintLevel,
+				action: 'ignore-hint'
+			});
+
+			return;
+		}
 
 		if ( selection !== 'ヒントを見る' ) {
 			return;
@@ -56,6 +74,13 @@ export function showHintNotification(
 				);
 				return;
 			}
+			studyLogger?.log({
+				timestamp: new Date().toISOString(),
+				fileName: document.fileName,
+				reason,
+				hintLevel,
+				action: 'view-hint'
+			});
 		const cacheKey =
 			createCacheKey(
 				language,
@@ -89,6 +114,15 @@ export function showHintNotification(
 		else {
 			hint =
 				`【キャッシュから表示】\n\n${hint}`;
+		}
+
+		if (studyLogger) {
+			studyLogger.saveHintToText(
+				document.fileName,
+				hint,
+				reason,
+				hintLevel
+			);
 		}
 
 		outputChannel.clear();

@@ -1,0 +1,5 @@
+timestamp,fileName,reason,hintLevel,idleSeconds,editCount,changedCharacterCount,action
+"2026-10-05T05:09:21.971Z","c:\Users\imako\sort.c","long-idle","light","10.101","0","0","detected"
+"2026-10-05T05:09:42.178Z","c:\Users\imako\sort.c","long-idle","medium","20.194","0","0","detected"
+"2026-10-05T05:10:12.502Z","c:\Users\imako\sort.c","long-idle","strong","30.314","0","0","detected"
+"2026-10-05T05:10:15.440Z","c:\Users\imako\sort.c","long-idle","strong","","","","view-hint"
